@@ -4,37 +4,46 @@ import { Link, useLocation } from 'react-router-dom';
 const Navbar = () => {
     const location = useLocation();
 
-    const isActive = (path) => {
-        return location.pathname === path ? 'text-primary-700 bg-primary-50' : 'text-gray-600 hover:text-primary-600 hover:bg-gray-50';
-    };
-
     return (
-        <nav className="bg-white/80 backdrop-blur-md border-b border-primary-100 sticky top-0 z-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between h-16">
-                    <div className="flex items-center">
-                        <Link to="/" className="flex-shrink-0 flex items-center gap-2">
-                            <span className="text-2xl font-bold bg-gradient-to-r from-primary-700 to-primary-500 bg-clip-text text-transparent">
-                                LuxeSalon
-                            </span>
-                        </Link>
-                    </div>
-
-                    <div className="hidden sm:flex sm:items-center sm:space-x-8">
-                        <Link
-                            to="/"
-                            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${isActive('/')}`}
-                        >
-                            Services
-                        </Link>
-                        <Link
-                            to="/bookings"
-                            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${isActive('/bookings')}`}
-                        >
-                            My Bookings
-                        </Link>
+        <nav className="bg-white/90 backdrop-blur-sm sticky top-0 z-50 py-4 px-6 md:px-12 flex justify-between items-center shadow-sm">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2">
+                <div className="border border-black px-3 py-1 bg-white">
+                    <span className="font-serif tracking-widest font-bold text-black text-sm md:text-base whitespace-nowrap">
+                        HAIR RAP BY YOYO
+                    </span>
+                    <div className="text-[0.5rem] tracking-[0.2em] text-center uppercase text-gray-500">
+                        Salon
                     </div>
                 </div>
+            </Link>
+
+            {/* Middle Links */}
+            <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600">
+                <Link to="/" className="hover:text-black transition-colors">Home</Link>
+                <Link to="/" className="hover:text-black transition-colors">Services</Link>
+                <Link to="/bookings" className="hover:text-black transition-colors">My Bookings</Link>
+                <Link to="#" className="hover:text-black transition-colors">About Us</Link>
+                <Link to="#" className="hover:text-black transition-colors">Contact</Link>
+            </div>
+
+            {/* Auth Buttons */}
+            <div className="flex items-center gap-4">
+                <Link
+                    to="/login"
+                    className="flex items-center text-gray-500 hover:text-black text-sm font-medium gap-1"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg>
+                    Login
+                </Link>
+                <Link
+                    to="/register"
+                    className="bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                    Register
+                </Link>
             </div>
         </nav>
     );

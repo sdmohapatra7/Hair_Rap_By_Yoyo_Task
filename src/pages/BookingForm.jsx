@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
@@ -13,52 +13,67 @@ const BookingForm = () => {
 
     const { items: services } = useSelector((state) => state.services);
     const { createStatus, createError } = useSelector((state) => state.bookings);
+    const [agreed, setAgreed] = useState(false);
 
-    // Ensure services are loaded to find the selected one
     useEffect(() => {
         if (services.length === 0) {
             dispatch(fetchServices());
         }
     }, [dispatch, services]);
 
-    // Handle successful booking redirection
     useEffect(() => {
         if (createStatus === 'succeeded') {
             const timer = setTimeout(() => {
                 dispatch(resetCreateStatus());
                 navigate('/bookings');
-            }, 1500); // Wait a bit to show success message
+            }, 1500);
             return () => clearTimeout(timer);
         }
     }, [createStatus, navigate, dispatch]);
 
     const formik = useFormik({
         initialValues: {
-            serviceId: serviceId || '',
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john.doe@example.com',
+            phone: '',
+            chooseWhom: '',
+            stylist: '',
+            gender: '',
+            serviceType: serviceId || '',
+            category: '',
             date: '',
             time: '',
-            notes: ''
+            message: ''
         },
         enableReinitialize: true,
         validationSchema: Yup.object({
-            serviceId: Yup.string().required('Service selection is required'),
-            date: Yup.date()
-                .required('Date is required')
-                .min(new Date(), 'Date cannot be in the past'),
-            time: Yup.string().required('Time is required'),
-            notes: Yup.string().max(200, 'Notes must be 200 characters or less')
+            firstName: Yup.string().required('Required'),
+            lastName: Yup.string().required('Required'),
+            email: Yup.string().email('Invalid email').required('Required'),
+            phone: Yup.string().required('Required'),
+            serviceType: Yup.string().required('Required'),
+            date: Yup.date().required('Required'),
+            time: Yup.string().required('Required'),
         }),
         onSubmit: (values) => {
+            if (!agreed) return;
+            const service = services.find(s => s.id === parseInt(values.serviceType));
             const bookingData = {
-                ...values,
-                serviceName: services.find(s => s.id === parseInt(values.serviceId))?.name || 'Unknown Service',
-                serviceId: parseInt(values.serviceId)
+                serviceId: parseInt(values.serviceType),
+                serviceName: service?.name || 'Unknown Service',
+                date: values.date,
+                time: values.time,
+                notes: values.message,
+                // Mocking additional data handling
+                customerName: `${values.firstName} ${values.lastName}`
             };
             dispatch(createBooking(bookingData));
         },
     });
 
-    const selectedService = services.find(s => s.id === parseInt(formik.values.serviceId));
+    const selectedService = services.find(s => s.id === parseInt(formik.values.serviceType));
+    const totalPrice = selectedService ? selectedService.price : 0;
 
     if (createStatus === 'succeeded') {
         return (
@@ -69,122 +84,195 @@ const BookingForm = () => {
                     </svg>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">Booking Confirmed!</h2>
-                <p className="text-gray-600">Redirecting to your bookings...</p>
             </div>
         );
     }
 
     return (
-        <div className="max-w-2xl mx-auto px-4 py-12">
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-                <div className="bg-primary-600 px-8 py-6 text-white">
-                    <h1 className="text-2xl font-bold">Book Appointment</h1>
-                    <p className="opacity-90 mt-1">
-                        {selectedService ? `For ${selectedService.name} ($${selectedService.price})` : 'Select your service'}
-                    </p>
-                </div>
+        <div className="max-w-5xl mx-auto px-4 py-12">
+            <div className="text-center mb-10">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Book an Appointment</h1>
+                <p className="text-gray-500 max-w-2xl mx-auto">
+                    Ready to take the first step toward your dream property? Fill out the form below, and our real estate wizards will work their magic to find your perfect match.
+                </p>
+            </div>
 
-                <form onSubmit={formik.handleSubmit} className="p-8 space-y-6">
-                    {createError && (
-                        <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
-                            <p className="text-red-700">{createError}</p>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+                <form onSubmit={formik.handleSubmit} className="space-y-6">
+                    {/* Row 1: Personal Info */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                            <input
+                                type="text"
+                                {...formik.getFieldProps('firstName')}
+                                placeholder="Enter First Name"
+                                className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors"
+                            />
                         </div>
-                    )}
-
-                    {/* Service Selection */}
-                    <div>
-                        <label htmlFor="serviceId" className="block text-sm font-medium text-gray-700 mb-1">Service</label>
-                        <select
-                            id="serviceId"
-                            {...formik.getFieldProps('serviceId')}
-                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all ${formik.touched.serviceId && formik.errors.serviceId ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                                }`}
-                        >
-                            <option value="">Select a service</option>
-                            {services.map((service) => (
-                                <option key={service.id} value={service.id}>
-                                    {service.name} - ${service.price} ({service.duration} min)
-                                </option>
-                            ))}
-                        </select>
-                        {formik.touched.serviceId && formik.errors.serviceId ? (
-                            <div className="text-red-500 text-xs mt-1 absolute">{formik.errors.serviceId}</div>
-                        ) : null}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                            <input
+                                type="text"
+                                {...formik.getFieldProps('lastName')}
+                                placeholder="Enter Last Name"
+                                className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input
+                                type="email"
+                                {...formik.getFieldProps('email')}
+                                placeholder="Enter your Email"
+                                className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                            <input
+                                type="tel"
+                                {...formik.getFieldProps('phone')}
+                                placeholder="Enter Phone Number"
+                                className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors"
+                            />
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Date Field */}
+                    {/* Row 2: Choose Whom */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Choose Whom</label>
+                        <select
+                            {...formik.getFieldProps('chooseWhom')}
+                            className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors appearance-none"
+                        >
+                            <option value="">Select gender</option>
+                            <option value="men">Men</option>
+                            <option value="women">Women</option>
+                        </select>
+                    </div>
+
+                    {/* Row 3: Selections */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <div>
-                            <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                            <input
-                                id="date"
-                                type="date"
-                                {...formik.getFieldProps('date')}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all ${formik.touched.date && formik.errors.date ? 'border-red-500 bg-red-50' : 'border-gray-300'
-                                    }`}
-                            />
-                            {formik.touched.date && formik.errors.date ? (
-                                <div className="text-red-500 text-xs mt-1 absolute">{formik.errors.date}</div>
-                            ) : null}
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Choose Stylist</label>
+                            <select
+                                {...formik.getFieldProps('stylist')}
+                                className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors appearance-none"
+                            >
+                                <option value="">Select Stylist</option>
+                                <option value="alex">Alex</option>
+                                <option value="sarah">Sarah</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                            <select
+                                {...formik.getFieldProps('gender')}
+                                className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors appearance-none"
+                            >
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Services Type</label>
+                            <select
+                                {...formik.getFieldProps('serviceType')}
+                                className={`w-full bg-gray-50 border rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors appearance-none ${formik.errors.serviceType ? 'border-red-500' : 'border-gray-200'}`}
+                            >
+                                <option value="">Select Services</option>
+                                {services.map(s => (
+                                    <option key={s.id} value={s.id}>{s.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Service Category</label>
+                            <select
+                                {...formik.getFieldProps('category')}
+                                className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors appearance-none"
+                            >
+                                <option value="">Select Category</option>
+                                <option value="hair">Hair</option>
+                                <option value="spa">Spa</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Row 4: Date & Time */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
+                            <div className="relative">
+                                <input
+                                    type="date"
+                                    {...formik.getFieldProps('date')}
+                                    className={`w-full bg-gray-50 border rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors ${formik.errors.date && formik.touched.date ? 'border-red-500' : 'border-gray-200'}`}
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Time</label>
+                            <div className="relative">
+                                <select
+                                    {...formik.getFieldProps('time')}
+                                    className={`w-full bg-gray-50 border rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors appearance-none ${formik.errors.time && formik.touched.time ? 'border-red-500' : 'border-gray-200'}`}
+                                >
+                                    <option value="">Select Time</option>
+                                    <option value="09:00">09:00 AM</option>
+                                    <option value="10:00">10:00 AM</option>
+                                    <option value="11:00">11:00 AM</option>
+                                    <option value="13:00">01:00 PM</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Row 5: Message */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                        <textarea
+                            {...formik.getFieldProps('message')}
+                            rows="4"
+                            placeholder="Enter your Message here..."
+                            className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors resize-none"
+                        ></textarea>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row justify-between items-center pt-4">
+                        <div className="flex items-center gap-1 mb-4 md:mb-0">
+                            <span className="text-sm font-medium text-gray-500">Total</span>
+                            <span className="text-2xl font-bold text-gray-900">
+                                {totalPrice > 0 ? `$${totalPrice.toLocaleString()}` : '$0'}
+                            </span>
                         </div>
 
-                        {/* Time Field */}
-                        <div>
-                            <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">Time</label>
-                            <select
-                                id="time"
-                                {...formik.getFieldProps('time')}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all ${formik.touched.time && formik.errors.time ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                        <div className="flex flex-col items-end gap-4 w-full md:w-auto">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={agreed}
+                                    onChange={(e) => setAgreed(e.target.checked)}
+                                    className="h-4 w-4 text-rose-500 rounded border-gray-300 focus:ring-rose-500"
+                                />
+                                <span className="text-xs text-gray-500">I agree with Terms of Use and Privacy Policy</span>
+                            </label>
+
+                            <button
+                                type="submit"
+                                disabled={!agreed || createStatus === 'loading'}
+                                className={`px-8 py-3 rounded-md text-white font-medium text-sm transition-all ${agreed && createStatus !== 'loading'
+                                        ? 'bg-rose-500 hover:bg-rose-600 shadow-md hover:shadow-lg'
+                                        : 'bg-gray-300 cursor-not-allowed'
                                     }`}
                             >
-                                <option value="">Select a time</option>
-                                <option value="09:00">09:00 AM</option>
-                                <option value="10:00">10:00 AM</option>
-                                <option value="11:00">11:00 AM</option>
-                                <option value="13:00">01:00 PM</option>
-                                <option value="14:00">02:00 PM</option>
-                                <option value="15:00">03:00 PM</option>
-                                <option value="16:00">04:00 PM</option>
-                            </select>
-                            {formik.touched.time && formik.errors.time ? (
-                                <div className="text-red-500 text-xs mt-1 absolute">{formik.errors.time}</div>
-                            ) : null}
+                                {createStatus === 'loading' ? 'Processing...' : 'Book Now'}
+                            </button>
                         </div>
                     </div>
-
-                    {/* Notes Field */}
-                    <div>
-                        <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">Notes (Optional)</label>
-                        <textarea
-                            id="notes"
-                            rows="3"
-                            {...formik.getFieldProps('notes')}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all resize-none"
-                            placeholder="Any special requests or details..."
-                        />
-                        {formik.touched.notes && formik.errors.notes ? (
-                            <div className="text-red-500 text-xs mt-1">{formik.errors.notes}</div>
-                        ) : null}
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={createStatus === 'loading'}
-                        className={`w-full py-3 px-4 rounded-xl text-white font-semibold shadow-md transition-all duration-300 ${createStatus === 'loading'
-                                ? 'bg-gray-400 cursor-not-allowed'
-                                : 'bg-primary-600 hover:bg-primary-700 hover:shadow-lg transform hover:-translate-y-0.5'
-                            }`}
-                    >
-                        {createStatus === 'loading' ? (
-                            <span className="flex items-center justify-center">
-                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Processing...
-                            </span>
-                        ) : 'Confirm Booking'}
-                    </button>
+                    {createError && <div className="text-red-500 text-sm mt-2 text-center">{createError}</div>}
                 </form>
             </div>
         </div>
