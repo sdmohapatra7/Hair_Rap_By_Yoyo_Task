@@ -46,3 +46,15 @@ A premium, user-friendly frontend for a salon booking system built with **React*
     ```bash
     npm run build
     ```
+
+## Screenshots
+
+### Service Listing
+![Service Page](src/assets/servicepage.png)
+
+### Booking Form
+![Booking Form](src/assets/bookingform.png)
+
+### My Bookings
+![My Bookings](src/assets/mybooking1.png)
+![My Bookings Details](src/assets/mybooking2.png)
