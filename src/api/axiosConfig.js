@@ -1,5 +1,5 @@
 import axios from 'axios';
-import './mockData'; // Import mock setup to activate it
+import { setupMocks } from './mockData';
 
 const api = axios.create({
     baseURL: '/api',
@@ -7,5 +7,8 @@ const api = axios.create({
         'Content-Type': 'application/json',
     },
 });
+
+// Activate the mock setup for this specific instance
+setupMocks(api);
 
 export default api;
