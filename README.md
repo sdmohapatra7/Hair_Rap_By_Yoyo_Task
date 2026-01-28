@@ -2,34 +2,35 @@
 
 A premium, user-friendly frontend for a salon booking system built with **React**, **Redux Toolkit**, and **Tailwind CSS**.
 
-## Features
+## ✨ Features
 
-- **Service Listing**: Browse premium salon services with details and pricing.
-- **Booking System**: 
-    - Smooth booking flow with pre-filled service details.
-    - **Form Validation** using **Formik** and **Yup**.
-    - Flexible service selection (Dropdown or Direct Book).
-- **My Bookings**: 
-    - View all upcoming and cancelled appointments.
-    - **Tabs** for filtering (All, Upcoming, Cancelled).
-    - **Cancel Booking** capability.
-- **Responsive Design**: Fully responsive UI tailored for mobile and desktop.
+- **🏠 Dedicated Home Page**: Hero section, service highlights, and featured salons.
+- **💅 Service Listing**: Browse premium salon services with specific categories, location filters, and favorites.
+- **📅 Smart Booking System**: 
+    - Smooth booking flow with pre-filled details.
+    - **Live Form Validation** (Formik & Yup).
+    - Visual visual confirmation modal instead of browser alerts.
+- **👤 Customer Dashboard**: 
+    - **Sidebar Navigation**: Easy access to Bookings, Favorites, Wallet, etc.
+    - **My Bookings**: View upcoming/past appointments with pagination and sorting.
+    - **Cancellation**: Secure cancellation with confirmation prompts.
+- **📱 Responsive Design**: Fully optimized for seamless mobile and desktop experience.
 
-## Tech Stack & Approach
+## 🛠️ Tech Stack & Approach
 
 ### Core Technologies
-- **React (Vite)**: For a fast, modern component-based UI.
-- **Tailwind CSS v4**: For rapid, utility-first styling with a premium design system (custom color palette, glassmorphism effects).
-- **Redux Toolkit**: Centralized state management for Services and Bookings, enabling predictable data flow.
-- **Formik & Yup**: robust form handling and validation logic.
-- **Axios & Axios Mock Adapter**: simulating a real REST API with network latency to demonstrate realistic async handling.
+- **React (Vite)**: Fast, modern component-based UI.
+- **Tailwind CSS**: Utility-first styling with a custom **premium design system** (glassmorphism, branded colors).
+- **Redux Toolkit**: Centralized state management for Services, Bookings, and User preferences.
+- **Formik & Yup**: Robust form validation and error handling.
+- **Axios Mock Adapter**: Simulates realistic API latency and responses.
 
 ### Architecture
-- **State Management**: Uses Redux slices (`servicesSlice`, `bookingsSlice`) to manage application state, employing `createAsyncThunk` for async operations.
-- **Mock API**: A realistic mock backend (`src/api/mockData.js`) intercepts Axios requests, allowing the app to function fully without a real server.
-- **Component Design**: Reusable components (`ServiceCard`, `Navbar`) and page-level components (`BookingForm`, `MyBookings`) focused on single responsibilities.
+- **Router**: `react-router-dom` v6 for seamless client-side navigation.
+- **State**: Redux slices (`servicesSlice`, `bookingsSlice`) with `createAsyncThunk`.
+- **Components**: Modular design (`ServiceCard`, `CustomerSidebar`, `ConfirmModal`) for maintainability.
 
-## Setup Instructions
+## 🚀 Setup Instructions
 
 1.  **Install Dependencies**
     ```bash
@@ -47,14 +48,16 @@ A premium, user-friendly frontend for a salon booking system built with **React*
     npm run build
     ```
 
-## Screenshots
+## 📸 Screenshots
+
+### Home Page
+![Home Page](https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=800)
 
 ### Service Listing
-![Service Page](src/assets/servicepage.png)
+![Service Listing](https://images.unsplash.com/photo-1521590832169-d757d5494d4e?auto=format&fit=crop&q=80&w=800)
 
-### Booking Form
-![Booking Form](src/assets/bookingform.png)
+### Customer Dashboard
+![Dashboard](https://images.unsplash.com/photo-1585232569449-35090022cd6d?auto=format&fit=crop&q=80&w=800)
 
-### My Bookings
-![My Bookings](src/assets/mybooking1.png)
-![My Bookings Details](src/assets/mybooking2.png)
+### Booking Flow
+![Booking Form](https://images.unsplash.com/photo-1633681926022-84c23e8cb2d6?auto=format&fit=crop&q=80&w=800)
