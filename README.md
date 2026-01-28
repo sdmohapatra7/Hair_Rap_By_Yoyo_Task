@@ -51,13 +51,13 @@ A premium, user-friendly frontend for a salon booking system built with **React*
 ## 📸 Screenshots
 
 ### Home Page
-![Home Page](https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=800)
+![Home Page](src/assets/screenshots/home.png)
 
 ### Service Listing
-![Service Listing](https://images.unsplash.com/photo-1521590832169-d757d5494d4e?auto=format&fit=crop&q=80&w=800)
+![Service Listing](src/assets/screenshots/services.png)
 
 ### Customer Dashboard
-![Dashboard](https://images.unsplash.com/photo-1585232569449-35090022cd6d?auto=format&fit=crop&q=80&w=800)
+![Dashboard](src/assets/screenshots/dashboard.png)
 
 ### Booking Flow
-![Booking Form](https://images.unsplash.com/photo-1633681926022-84c23e8cb2d6?auto=format&fit=crop&q=80&w=800)
+![Booking Form](src/assets/screenshots/booking.png)
