@@ -6,7 +6,9 @@ import { Link } from 'react-router-dom';
 const MyBookings = () => {
     const dispatch = useDispatch();
     const { items: bookings, status, error, cancelStatus } = useSelector((state) => state.bookings);
+    const { user } = useSelector((state) => state.auth);
     const [activeFilter, setActiveFilter] = useState('All');
+    const [sortBy, setSortBy] = useState('Newest');
 
     useEffect(() => {
         dispatch(fetchBookings());
@@ -31,18 +33,28 @@ const MyBookings = () => {
     };
 
     // Derived stats for the top bar
-    const pendingCount = bookings.filter(b => b.status === 'Confirmed').length; // Assuming Confirmed = Pending execution
+    const pendingCount = bookings.filter(b => b.status === 'Confirmed').length;
     const canceledCount = bookings.filter(b => b.status === 'Cancelled').length;
-    const completedCount = 3; // Mocking completed count as we don't have this status yet in mock
+    const completedCount = bookings.filter(b => b.status === 'Completed').length;
 
-    // Filter bookings based on active tab
-    const filteredBookings = bookings.filter(booking => {
-        if (activeFilter === 'All') return true;
-        if (activeFilter === 'Upcoming') return booking.status === 'Confirmed';
-        if (activeFilter === 'Cancelled') return booking.status === 'Cancelled';
-        if (activeFilter === 'Completed') return false;
-        return true;
-    });
+    // Filter and Sort bookings
+    const processedBookings = React.useMemo(() => {
+        let result = bookings.filter(booking => {
+            if (activeFilter === 'All') return true;
+            if (activeFilter === 'Upcoming') return booking.status === 'Confirmed';
+            if (activeFilter === 'Cancelled') return booking.status === 'Cancelled';
+            if (activeFilter === 'Completed') return booking.status === 'Completed';
+            return true;
+        });
+
+        return result.sort((a, b) => {
+            if (sortBy === 'Newest') return new Date(b.date) - new Date(a.date);
+            if (sortBy === 'Oldest') return new Date(a.date) - new Date(b.date);
+            if (sortBy === 'Price High') return b.servicePrice - a.servicePrice;
+            if (sortBy === 'Price Low') return a.servicePrice - b.servicePrice;
+            return 0;
+        });
+    }, [bookings, activeFilter, sortBy]);
 
     return (
         <div className="bg-gray-50 min-h-screen pb-12">
@@ -65,10 +77,10 @@ const MyBookings = () => {
                         {/* Profile Card */}
                         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center mb-6">
                             <div className="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-3 overflow-hidden">
-                                <img src="https://ui-avatars.com/api/?name=John+Smith&background=random" alt="User" />
+                                <img src={user?.avatar || "https://ui-avatars.com/api/?name=Guest+User&background=random"} alt="User" />
                             </div>
-                            <h3 className="font-bold text-gray-900">John Smith</h3>
-                            <p className="text-xs text-gray-500 mt-1">Member Since Sep 2021</p>
+                            <h3 className="font-bold text-gray-900">{user?.name || 'Guest User'}</h3>
+                            <p className="text-xs text-gray-500 mt-1">Member Since {user ? 'Sep 2021' : 'Today'}</p>
                         </div>
 
                         {/* Navigation */}
@@ -133,17 +145,22 @@ const MyBookings = () => {
                                 </button>
                             </div>
 
-                            <button className="text-sm text-gray-400 flex items-center gap-1">
-                                Sort by
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                            <button
+                                onClick={() => setSortBy(sortBy === 'Newest' ? 'Oldest' : 'Newest')}
+                                className="text-sm text-gray-400 flex items-center gap-1 hover:text-black transition-colors"
+                            >
+                                Sort: Date {sortBy === 'Newest' ? 'Newest First' : 'Oldest First'}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-4 h-4 transition-transform ${sortBy === 'Oldest' ? 'rotate-180' : ''}`}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                                </svg>
                             </button>
                         </div>
 
                         {/* Booking List */}
                         <div className="space-y-4">
-                            {filteredBookings.length === 0 ? (
+                            {processedBookings.length === 0 ? (
                                 <div className="text-center py-10 text-gray-500">No {activeFilter.toLowerCase()} bookings found.</div>
-                            ) : filteredBookings.map((booking) => (
+                            ) : processedBookings.map((booking) => (
                                 <div key={booking.id} className="border border-gray-100 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 hover:bg-gray-50 transition-colors">
                                     <div className="flex items-center gap-4 w-full md:w-auto">
                                         <div className="w-12 h-12 bg-rose-100 rounded-lg flex items-center justify-center text-rose-600">
@@ -151,7 +168,7 @@ const MyBookings = () => {
                                         </div>
                                         <div>
                                             <h4 className="font-bold text-gray-900">{booking.serviceName}</h4>
-                                            <span className="text-xs font-semibold bg-gray-100 px-2 py-0.5 rounded text-gray-600">& R123</span>
+                                            <span className="text-xs font-semibold bg-gray-100 px-2 py-0.5 rounded text-gray-600">Ref: #{booking.id}</span>
                                         </div>
                                     </div>
 
@@ -160,12 +177,15 @@ const MyBookings = () => {
                                     </div>
 
                                     <div className="font-medium text-gray-900 w-full md:text-right md:w-auto">
-                                        Total paid <span className="font-bold">$459</span>
+                                        Total <span className="font-bold">${booking.servicePrice}</span>
                                     </div>
 
                                     <div className="flex items-center gap-4 w-full md:w-auto justify-end">
-                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${booking.status === 'Cancelled' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>
-                                            {booking.status === 'Confirmed' ? 'Completed' : booking.status} {/* Mocking Confirmed as Completed for visual match */}
+                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${booking.status === 'Cancelled' ? 'bg-red-50 text-red-600' :
+                                            booking.status === 'Completed' ? 'bg-blue-50 text-blue-600' :
+                                                'bg-green-50 text-green-600'
+                                            }`}>
+                                            {booking.status}
                                         </span>
 
                                         <button className="text-sm font-medium text-rose-600 hover:text-rose-700">

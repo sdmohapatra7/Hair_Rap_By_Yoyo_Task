@@ -2,9 +2,13 @@ import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../store/authSlice';
 
 const Login = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const { status, error } = useSelector((state) => state.auth);
 
     const formik = useFormik({
         initialValues: {
@@ -16,11 +20,11 @@ const Login = () => {
             password: Yup.string().required('Required'),
         }),
         onSubmit: (values) => {
-            console.log(values);
-            // Mock login success
-            setTimeout(() => {
-                navigate('/');
-            }, 500);
+            dispatch(loginUser(values)).then((result) => {
+                if (result.meta.requestStatus === 'fulfilled') {
+                    navigate('/');
+                }
+            });
         },
     });
 
@@ -36,6 +40,13 @@ const Login = () => {
                         Sign in to manage your bookings
                     </p>
                 </div>
+
+                {error && (
+                    <div className="bg-red-50 border-1 border-red-500 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <span className="block sm:inline">{error}</span>
+                    </div>
+                )}
+
                 <form className="mt-8 space-y-6" onSubmit={formik.handleSubmit}>
                     <div className="space-y-4">
                         <div>
@@ -83,9 +94,10 @@ const Login = () => {
                     <div>
                         <button
                             type="submit"
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 shadow-md transition-all"
+                            disabled={status === 'loading'}
+                            className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-rose-600 hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500 shadow-md transition-all ${status === 'loading' ? 'opacity-70 cursor-not-allowed' : ''}`}
                         >
-                            Log in
+                            {status === 'loading' ? 'Signing in...' : 'Log in'}
                         </button>
                     </div>
 

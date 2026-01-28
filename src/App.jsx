@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 import Footer from './components/Footer';
@@ -9,26 +9,33 @@ import MyBookings from './pages/MyBookings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 
+const Layout = () => {
+  const location = useLocation();
+  const hideLayout = ['/login', '/register'].includes(location.pathname);
+
+  return (
+    <div className="min-h-screen bg-white font-sans text-gray-900 flex flex-col">
+      {!hideLayout && <Navbar />}
+      <main className="flex-grow">
+        <Routes>
+          <Route path="/" element={<ServiceListing />} />
+          <Route path="/book/:serviceId" element={<BookingForm />} />
+          <Route path="/book" element={<BookingForm />} />
+          <Route path="/bookings" element={<MyBookings />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </main>
+      {!hideLayout && <Footer />}
+    </div>
+  );
+};
+
 function App() {
   return (
     <Provider store={store}>
       <Router>
-        <div className="min-h-screen bg-white font-sans text-gray-900 flex flex-col">
-          <Navbar />
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<ServiceListing />} />
-              <Route path="/book/:serviceId" element={<BookingForm />} />
-              {/* Also allow booking without a pre-selected service */}
-              <Route path="/book" element={<BookingForm />} />
-              <Route path="/book" element={<BookingForm />} />
-              <Route path="/bookings" element={<MyBookings />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <Layout />
       </Router>
     </Provider>
   );

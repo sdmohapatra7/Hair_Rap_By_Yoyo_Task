@@ -1,8 +1,8 @@
 import axios from 'axios';
-import './mockData'; // Import mock setup to activate it
+// import './mockData'; 
 
 const api = axios.create({
-    baseURL: '/api',
+    baseURL: 'http://10.13.237.130:5000/api',
     headers: {
         'Content-Type': 'application/json',
     },

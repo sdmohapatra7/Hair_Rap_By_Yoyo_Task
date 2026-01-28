@@ -19,8 +19,11 @@ const ServiceListing = () => {
         }
     }, [status, dispatch]);
 
-    // Categories List
-    const categories = ['All Categories', 'Hair Cut', 'Hair Color', 'Facial', 'Manicure', 'Pedicure', 'Beard'];
+    // Dynamic Categories List
+    const categories = useMemo(() => {
+        const uniqueCategories = [...new Set(services.map(s => s.category))];
+        return ['All Categories', ...uniqueCategories];
+    }, [services]);
 
     // Filtering Logic
     const filteredServices = useMemo(() => {
@@ -31,12 +34,10 @@ const ServiceListing = () => {
             // Price
             const matchesPrice = service.price <= priceRange;
 
-            // Category (Mocking category match by name since mock data lacks category field)
+            // Category
             let matchesCategory = true;
             if (selectedCategory !== 'All Categories') {
-                // Simple keyword check for category
-                const keyword = selectedCategory.split(' ')[0].toLowerCase();
-                matchesCategory = service.name.toLowerCase().includes(keyword);
+                matchesCategory = service.category === selectedCategory;
             }
 
             return matchesSearch && matchesPrice && matchesCategory;

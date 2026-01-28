@@ -13,6 +13,7 @@ const BookingForm = () => {
 
     const { items: services } = useSelector((state) => state.services);
     const { createStatus, createError } = useSelector((state) => state.bookings);
+    const { user } = useSelector((state) => state.auth);
     const [agreed, setAgreed] = useState(false);
 
     useEffect(() => {
@@ -33,9 +34,9 @@ const BookingForm = () => {
 
     const formik = useFormik({
         initialValues: {
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john.doe@example.com',
+            firstName: user ? user.name.split(' ')[0] : '',
+            lastName: user ? user.name.split(' ').slice(1).join(' ') : '',
+            email: user ? user.email : '',
             phone: '',
             chooseWhom: '',
             stylist: '',
@@ -57,17 +58,23 @@ const BookingForm = () => {
             time: Yup.string().required('Required'),
         }),
         onSubmit: (values) => {
-            if (!agreed) return;
+            console.log('Form values:', values);
+            if (!agreed) {
+                console.log('Agreement checkbox not checked');
+                return;
+            }
             const service = services.find(s => s.id === parseInt(values.serviceType));
+            console.log('Found service:', service);
             const bookingData = {
                 serviceId: parseInt(values.serviceType),
                 serviceName: service?.name || 'Unknown Service',
                 date: values.date,
                 time: values.time,
                 notes: values.message,
-                // Mocking additional data handling
+                userId: user?.id,
                 customerName: `${values.firstName} ${values.lastName}`
             };
+            console.log('Sending booking data:', bookingData);
             dispatch(createBooking(bookingData));
         },
     });
@@ -107,8 +114,9 @@ const BookingForm = () => {
                                 type="text"
                                 {...formik.getFieldProps('firstName')}
                                 placeholder="Enter First Name"
-                                className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors"
+                                className={`w-full bg-gray-50 border rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors ${formik.touched.firstName && formik.errors.firstName ? 'border-red-500' : 'border-gray-200'}`}
                             />
+                            {formik.touched.firstName && formik.errors.firstName && <div className="text-red-500 text-[10px] mt-1">{formik.errors.firstName}</div>}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
@@ -116,8 +124,9 @@ const BookingForm = () => {
                                 type="text"
                                 {...formik.getFieldProps('lastName')}
                                 placeholder="Enter Last Name"
-                                className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors"
+                                className={`w-full bg-gray-50 border rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors ${formik.touched.lastName && formik.errors.lastName ? 'border-red-500' : 'border-gray-200'}`}
                             />
+                            {formik.touched.lastName && formik.errors.lastName && <div className="text-red-500 text-[10px] mt-1">{formik.errors.lastName}</div>}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
@@ -125,8 +134,9 @@ const BookingForm = () => {
                                 type="email"
                                 {...formik.getFieldProps('email')}
                                 placeholder="Enter your Email"
-                                className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors"
+                                className={`w-full bg-gray-50 border rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors ${formik.touched.email && formik.errors.email ? 'border-red-500' : 'border-gray-200'}`}
                             />
+                            {formik.touched.email && formik.errors.email && <div className="text-red-500 text-[10px] mt-1">{formik.errors.email}</div>}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
@@ -134,8 +144,9 @@ const BookingForm = () => {
                                 type="tel"
                                 {...formik.getFieldProps('phone')}
                                 placeholder="Enter Phone Number"
-                                className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors"
+                                className={`w-full bg-gray-50 border rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors ${formik.touched.phone && formik.errors.phone ? 'border-red-500' : 'border-gray-200'}`}
                             />
+                            {formik.touched.phone && formik.errors.phone && <div className="text-red-500 text-[10px] mt-1">{formik.errors.phone}</div>}
                         </div>
                     </div>
 
@@ -187,6 +198,7 @@ const BookingForm = () => {
                                     <option key={s.id} value={s.id}>{s.name}</option>
                                 ))}
                             </select>
+                            {formik.touched.serviceType && formik.errors.serviceType && <div className="text-red-500 text-[10px] mt-1">{formik.errors.serviceType}</div>}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Service Category</label>
@@ -195,8 +207,9 @@ const BookingForm = () => {
                                 className="w-full bg-gray-50 border border-gray-200 rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors appearance-none"
                             >
                                 <option value="">Select Category</option>
-                                <option value="hair">Hair</option>
-                                <option value="spa">Spa</option>
+                                {[...new Set(services.map(s => s.category))].map(cat => (
+                                    <option key={cat} value={cat}>{cat}</option>
+                                ))}
                             </select>
                         </div>
                     </div>
@@ -211,6 +224,7 @@ const BookingForm = () => {
                                     {...formik.getFieldProps('date')}
                                     className={`w-full bg-gray-50 border rounded-md px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-rose-500 focus:bg-white transition-colors ${formik.errors.date && formik.touched.date ? 'border-red-500' : 'border-gray-200'}`}
                                 />
+                                {formik.touched.date && formik.errors.date && <div className="text-red-500 text-[10px] mt-1">{formik.errors.date}</div>}
                             </div>
                         </div>
                         <div>
@@ -226,6 +240,7 @@ const BookingForm = () => {
                                     <option value="11:00">11:00 AM</option>
                                     <option value="13:00">01:00 PM</option>
                                 </select>
+                                {formik.touched.time && formik.errors.time && <div className="text-red-500 text-[10px] mt-1">{formik.errors.time}</div>}
                             </div>
                         </div>
                     </div>
@@ -264,8 +279,8 @@ const BookingForm = () => {
                                 type="submit"
                                 disabled={!agreed || createStatus === 'loading'}
                                 className={`px-8 py-3 rounded-md text-white font-medium text-sm transition-all ${agreed && createStatus !== 'loading'
-                                        ? 'bg-rose-500 hover:bg-rose-600 shadow-md hover:shadow-lg'
-                                        : 'bg-gray-300 cursor-not-allowed'
+                                    ? 'bg-rose-500 hover:bg-rose-600 shadow-md hover:shadow-lg'
+                                    : 'bg-gray-300 cursor-not-allowed'
                                     }`}
                             >
                                 {createStatus === 'loading' ? 'Processing...' : 'Book Now'}
