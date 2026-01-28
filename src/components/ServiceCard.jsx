@@ -2,6 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 const ServiceCard = ({ service }) => {
+    const [isFavorite, setIsFavorite] = React.useState(service.isFavorite || false);
+
+    const toggleFavorite = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsFavorite(!isFavorite);
+    };
+
     return (
         <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col group">
             <div className="relative h-48 overflow-hidden">
@@ -10,8 +18,11 @@ const ServiceCard = ({ service }) => {
                     alt={service.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <button className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-sm hover:bg-gray-50 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${service.isFavorite ? 'text-red-500 fill-current' : 'text-gray-400'}`} viewBox="0 0 20 20" fill="currentColor">
+                <button
+                    onClick={toggleFavorite}
+                    className="absolute top-3 right-3 bg-white p-2 rounded-full shadow-sm hover:bg-gray-50 transition-colors z-10"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-400'}`} viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
                     </svg>
                 </button>

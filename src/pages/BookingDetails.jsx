@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import ConfirmModal from '../components/ConfirmModal';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchBookings, cancelBooking } from '../store/bookingsSlice';
 
@@ -9,6 +10,7 @@ const BookingDetails = () => {
     const dispatch = useDispatch();
     const { items: bookings, status } = useSelector((state) => state.bookings);
     const [booking, setBooking] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         if (bookings.length === 0) {
@@ -24,12 +26,14 @@ const BookingDetails = () => {
         }
     }, [bookings, bookingId]);
 
-    const handleCancel = () => {
-        if (window.confirm('Are you sure you want to cancel this booking?')) {
-            dispatch(cancelBooking(booking.id)).then(() => {
-                navigate('/bookings');
-            });
-        }
+    const initiateCancel = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleConfirmCancel = () => {
+        dispatch(cancelBooking(booking.id)).then(() => {
+            navigate('/bookings');
+        });
     };
 
     if (status === 'loading') {
@@ -67,8 +71,8 @@ const BookingDetails = () => {
                         <p className="text-sm text-primary-700 font-medium">Order #{booking.bookingId || 'ID'}</p>
                     </div>
                     <span className={`px-4 py-2 rounded-lg text-sm font-bold ${booking.status === 'Completed' ? 'bg-green-100 text-green-700' :
-                            booking.status === 'Cancelled' ? 'bg-red-100 text-red-700' : // Note: API might allow 'Canceled' vs 'Cancelled' check both or standard
-                                'bg-blue-100 text-blue-700'
+                        booking.status === 'Cancelled' ? 'bg-red-100 text-red-700' : // Note: API might allow 'Canceled' vs 'Cancelled' check both or standard
+                            'bg-blue-100 text-blue-700'
                         }`}>
                         {booking.status}
                     </span>
@@ -143,7 +147,7 @@ const BookingDetails = () => {
 
                         {booking.status === 'Confirmed' && (
                             <button
-                                onClick={handleCancel}
+                                onClick={initiateCancel}
                                 className="px-6 py-2 border border-red-200 text-red-600 hover:bg-red-50 rounded-lg font-medium transition-colors"
                             >
                                 Cancel Booking
@@ -152,7 +156,17 @@ const BookingDetails = () => {
                     </div>
                 </div>
             </div>
-        </div>
+
+
+            <ConfirmModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onConfirm={handleConfirmCancel}
+                title="Cancel Booking"
+                message="Are you sure you want to cancel this booking? This action cannot be undone."
+                isDangerous={true}
+            />
+        </div >
     );
 };
 

@@ -129,12 +129,17 @@ const ServiceListing = () => {
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* Header */}
-            <div className="bg-gradient-to-r from-gray-900 to-gray-800 flex items-center justify-center h-48 rounded-2xl mb-8 relative overflow-hidden">
-                <div className="absolute inset-0 bg-black/40 z-10"></div>
-                {/* Background Image could go here */}
+            {/* Header */}
+            <div className="relative flex items-center justify-center h-48 rounded-2xl mb-8 overflow-hidden">
+                <div className="absolute inset-0 bg-black/50 z-10"></div>
+                <img
+                    src="https://images.unsplash.com/photo-1600948836101-f9ffda59d250?auto=format&fit=crop&q=80&w=1600"
+                    alt="Services Banner"
+                    className="absolute inset-0 w-full h-full object-cover"
+                />
                 <div className="relative z-20 text-center text-white">
                     <h1 className="text-4xl font-bold mb-2">Services</h1>
-                    <p className="text-gray-300 text-sm">Home &gt; Services</p>
+                    <p className="text-gray-200 text-sm">Home &gt; Services</p>
                 </div>
             </div>
 

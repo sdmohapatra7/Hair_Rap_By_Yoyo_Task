@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-const Sidebar = () => {
+const CustomerSidebar = () => {
     const location = useLocation();
 
     const isActive = (path) => {
@@ -19,8 +19,8 @@ const Sidebar = () => {
     ];
 
     return (
-        <div className="w-full md:w-64 flex-shrink-0 bg-white border-r border-gray-100 hidden lg:block">
-            <div className="rounded-2xl shadow-sm overflow-hidden m-2 bg-white">
+        <div className="w-full md:w-64 flex-shrink-0">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-6 text-center border-b border-gray-50">
                     <div className="relative inline-block">
                         <img
@@ -68,4 +68,4 @@ const Sidebar = () => {
     );
 };
 
-export default Sidebar;
+export default CustomerSidebar;
