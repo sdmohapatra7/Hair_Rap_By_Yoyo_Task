@@ -136,7 +136,7 @@ const AIAssistantPage = () => {
             <div className="w-64 bg-gray-50 dark:bg-gray-800 border-r border-gray-100 dark:border-gray-700 flex flex-col hidden md:flex">
                 <div className="p-4 border-b border-gray-100 dark:border-gray-700">
                     <div className="flex items-center gap-2 mb-6">
-                        <div className="border border-gray-900 dark:border-gray-100 px-2 py-1 text-xs font-serif tracking-widest dark:text-gray-100">HAIR RAP BY YOYO</div>
+                        <div onClick={() => navigate('/')} className="border border-gray-900 dark:border-gray-100 px-2 py-1 text-xs font-serif tracking-widest dark:text-gray-100 cursor-pointer">HAIR RAP BY YOYO</div>
                     </div>
 
                     <button

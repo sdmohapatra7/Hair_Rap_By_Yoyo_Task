@@ -1,13 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleFavorite } from '../store/favoritesSlice';
 
 const ServiceCard = ({ service }) => {
-    const [isFavorite, setIsFavorite] = React.useState(service.isFavorite || false);
+    const dispatch = useDispatch();
+    const favorites = useSelector(state => state.favorites.items);
+    const isFavorite = favorites.includes(service.id);
 
-    const toggleFavorite = (e) => {
+    const handleToggleFavorite = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsFavorite(!isFavorite);
+        dispatch(toggleFavorite(service.id));
     };
 
     return (
@@ -19,7 +23,7 @@ const ServiceCard = ({ service }) => {
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 transform-gpu"
                 />
                 <button
-                    onClick={toggleFavorite}
+                    onClick={handleToggleFavorite}
                     className="absolute top-3 right-3 bg-white dark:bg-gray-900 p-2 rounded-full shadow-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors z-10"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${isFavorite ? 'text-red-500 fill-current' : 'text-gray-400'}`} viewBox="0 0 20 20" fill="currentColor">

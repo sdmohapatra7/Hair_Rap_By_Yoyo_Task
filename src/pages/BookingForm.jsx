@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -36,6 +36,9 @@ const BookingForm = () => {
     const initialPrice = selectedService ? selectedService.price : 0;
     const originalPrice = selectedService ? selectedService.originalPrice : 0;
 
+    const location = useLocation();
+    const { preSelectedDate, preSelectedTime } = location.state || {};
+
     const formik = useFormik({
         initialValues: {
             firstName: '',
@@ -46,8 +49,8 @@ const BookingForm = () => {
             stylist: '',
             serviceType: selectedService ? selectedService.name : '',
             serviceCategory: selectedService ? selectedService.category : '',
-            date: '',
-            time: '',
+            date: preSelectedDate || '',
+            time: preSelectedTime || '',
             message: '',
             agreeToTerms: false
         },

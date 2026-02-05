@@ -24,13 +24,13 @@ const Sidebar = () => {
         <div className="w-full md:w-64 flex-shrink-0">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden m-2 md:m-0">
                 <div className="p-8 text-center border-b border-gray-50 dark:border-gray-700 flex flex-col items-center">
-                    <div className="relative inline-block mb-3">
+                    <Link to="/" className="relative inline-block mb-3 cursor-pointer">
                         <img
                             src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200&h=200"
                             alt="John Smith"
                             className="w-20 h-20 rounded-full border-4 border-white dark:border-gray-700 shadow-md object-cover"
                         />
-                    </div>
+                    </Link>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white">John Smith</h3>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Member Since Sep 2021</p>
                 </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchServices } from '../store/servicesSlice';
+import CustomAlert from '../components/CustomAlert';
 
 const ServiceDetails = () => {
     const { id } = useParams();
@@ -11,6 +12,7 @@ const ServiceDetails = () => {
 
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedTime, setSelectedTime] = useState('');
+    const [alert, setAlert] = useState(null);
 
     useEffect(() => {
         if (status === 'idle') {
@@ -26,12 +28,12 @@ const ServiceDetails = () => {
 
     // Mock Time Slots
     const timeSlots = [
-        "10:00 AM", "11:30 AM", "01:00 PM", "02:30 PM", "04:00 PM", "05:30 PM"
+        "10:00", "11:30", "13:00", "14:30", "16:00", "17:30"
     ];
 
     const handleBookNow = () => {
         if (!selectedDate || !selectedTime) {
-            alert("Please select a date and time");
+            setAlert({ message: 'Please select both a date and time to continue.', type: 'error' });
             return;
         }
         navigate(`/book/${service.id}`, {
@@ -43,7 +45,15 @@ const ServiceDetails = () => {
     };
 
     return (
-        <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8 py-8 relative">
+            {alert && (
+                <CustomAlert
+                    message={alert.message}
+                    type={alert.type}
+                    onClose={() => setAlert(null)}
+                />
+            )}
+
             {/* Breadcrumb */}
             <nav className="flex text-sm text-gray-500 mb-6">
                 <Link to="/" className="hover:text-primary-600">Home</Link>
@@ -129,8 +139,8 @@ const ServiceDetails = () => {
                                         key={time}
                                         onClick={() => setSelectedTime(time)}
                                         className={`py-2 px-1 text-xs font-medium rounded-lg border transition-all ${selectedTime === time
-                                                ? 'bg-primary-600 text-white border-primary-600'
-                                                : 'border-gray-200 text-gray-600 hover:border-primary-300 hover:bg-primary-50'
+                                            ? 'bg-primary-600 text-white border-primary-600'
+                                            : 'border-gray-200 text-gray-600 hover:border-primary-300 hover:bg-primary-50'
                                             }`}
                                     >
                                         {time}
