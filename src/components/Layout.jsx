@@ -10,17 +10,17 @@ const Layout = ({ children }) => {
     const isDashboardRoute = location.pathname.startsWith('/bookings') || location.pathname.startsWith('/profile');
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
             <Navbar />
             <div className={`flex ${isDashboardRoute ? 'max-w-7xl mx-auto' : ''}`}>
                 {isDashboardRoute && <Sidebar />}
-                <main className={`flex-1 ${isDashboardRoute ? 'bg-secondary-50 min-h-[calc(100vh-64px)]' : ''}`}>
+                <main className={`flex-1 ${isDashboardRoute ? 'bg-secondary-50 dark:bg-gray-900 min-h-[calc(100vh-64px)]' : ''} transition-colors duration-300`}>
                     {children}
                 </main>
             </div>
 
             {/* Simple footer */}
-            <footer className="bg-gray-50 border-t border-gray-100 py-12 mt-auto">
+            <footer className="bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 py-12 mt-auto transition-colors duration-300">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         <div>
@@ -59,7 +59,7 @@ const Layout = ({ children }) => {
                                 <input
                                     type="email"
                                     placeholder="Enter Email Address"
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-primary-500"
+                                    className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm outline-none focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400"
                                 />
                                 <button className="w-full bg-primary-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-primary-600 transition-colors">
                                     Subscribe
@@ -67,7 +67,7 @@ const Layout = ({ children }) => {
                             </div>
                         </div>
                     </div>
-                    <div className="mt-12 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center">
+                    <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col md:flex-row justify-between items-center">
                         <p className="text-sm text-gray-400">Copyright © 2025 - All Rights Reserved SalonWala</p>
                         <div className="flex space-x-4 mt-4 md:mt-0 text-sm text-gray-500">
                             <span>Terms and Conditions</span>

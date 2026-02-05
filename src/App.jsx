@@ -7,6 +7,8 @@ import ServiceListing from './pages/ServiceListing';
 import BookingForm from './pages/BookingForm';
 import MyBookings from './pages/MyBookings';
 import BookingDetails from './pages/BookingDetails';
+import ServiceDetails from './pages/ServiceDetails';
+import AIAssistantPage from './pages/AIAssistantPage';
 
 function App() {
   return (
@@ -17,6 +19,8 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/services" element={<ServiceListing />} />
+              <Route path="/services/:id" element={<ServiceDetails />} />
+              <Route path="/ai-chat" element={<AIAssistantPage />} />
               <Route path="/book/:serviceId" element={<BookingForm />} />
               {/* Also allow booking without a pre-selected service */}
               <Route path="/book" element={<BookingForm />} />
