@@ -9,6 +9,10 @@ import MyBookings from './pages/MyBookings';
 import BookingDetails from './pages/BookingDetails';
 import ServiceDetails from './pages/ServiceDetails';
 import AIAssistantPage from './pages/AIAssistantPage';
+import Dashboard from './pages/Dashboard';
+import Favorites from './pages/Favorites';
+import Reviews from './pages/Reviews';
+import Settings from './pages/Settings';
 
 function App() {
   return (
@@ -26,6 +30,10 @@ function App() {
               <Route path="/book" element={<BookingForm />} />
               <Route path="/bookings" element={<MyBookings />} />
               <Route path="/bookings/:bookingId" element={<BookingDetails />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/favorites" element={<Favorites />} />
+              <Route path="/reviews" element={<Reviews />} />
+              <Route path="/settings" element={<Settings />} />
             </Routes>
           </Layout>
         </div>

@@ -7,7 +7,8 @@ const Layout = ({ children }) => {
     const location = useLocation();
 
     // Check if the current route should use the dashboard layout (with sidebar)
-    const isDashboardRoute = location.pathname.startsWith('/bookings') || location.pathname.startsWith('/profile');
+    const dashboardRoutes = ['/bookings', '/profile', '/dashboard', '/favorites', '/reviews', '/settings', '/wallet'];
+    const isDashboardRoute = dashboardRoutes.some(route => location.pathname.startsWith(route));
     const isAIAssistantRoute = location.pathname === '/ai-chat';
 
     if (isAIAssistantRoute) {
@@ -21,7 +22,7 @@ const Layout = ({ children }) => {
     return (
         <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
             <Navbar />
-            <div className={`flex ${isDashboardRoute ? 'max-w-7xl mx-auto' : ''}`}>
+            <div className={`flex ${isDashboardRoute ? 'w-full' : ''}`}>
                 {isDashboardRoute && <Sidebar />}
                 <main className={`flex-1 ${isDashboardRoute ? 'bg-secondary-50 dark:bg-gray-900 min-h-[calc(100vh-64px)]' : ''} transition-colors duration-300`}>
                     {children}
