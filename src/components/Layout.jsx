@@ -8,6 +8,15 @@ const Layout = ({ children }) => {
 
     // Check if the current route should use the dashboard layout (with sidebar)
     const isDashboardRoute = location.pathname.startsWith('/bookings') || location.pathname.startsWith('/profile');
+    const isAIAssistantRoute = location.pathname === '/ai-chat';
+
+    if (isAIAssistantRoute) {
+        return (
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden">
+                {children}
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
