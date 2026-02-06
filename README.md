@@ -61,3 +61,7 @@ A premium, user-friendly frontend for a salon booking system built with **React*
 
 ### Booking Flow
 ![Booking Form](src/assets/screenshots/booking.png)
+
+### AI Assistant
+![AI Assistant Chat](src/assets/screenshots/ai1.png)
+![AI Assistant Responses](src/assets/screenshots/ai2.png)
